@@ -1,5 +1,5 @@
 #Download/use needed packages
-"C:\Users\AlyssaKamara\Documents\GitHub\HeatMaps\Bivariate.R"
+"C:\\Users\\AlyssaKamara\\Documents\\GitHub\\HeatMaps\\Bivariate.R"
 install.packages("ggplot2")
 install.packages("sf")
 install.packages("dplyr") 
@@ -18,18 +18,20 @@ census_tracts <- st_read("C:\\Users\\AlyssaKamara\\Desktop\\nhgis0004_shape\\nhg
   dplyr::filter(countyfp10 == "013") %>%
   dplyr::select(geoid10,gisjoin)
 
+colnames(census_tracts)
 class(census_tracts)
 
 
 #Vulnerability data
 vunerability_data <-read.csv("C:\\Users\\AlyssaKamara\\Desktop\\full_indicators_pctl_domain_scores_climate.csv") %>%
   dplyr::select(gisjoin, state_name,county,tract,pop_2015_2019_ces,fips,state,county_name,extrm_heat_2030_2050,pctl_avg_energy_burden_percent_income,pm2_5_ces)%>%
-  gisjoin = as.character(gisjoin)
+    gisjoin = as.character(gisjoin)
 
   colnames(vunerability_data)
-  class(vunerability_data)
-  
-#join datasets
+  class(vunerability_data) #I think that both the v and c data need to be shape files to join, this is not a sf
+  vunerability_data_sf <- st_as_sf(vunerability_data) #trying to convert but not working becuse no simple features geopmetry colum present
+
+  #join datasets
 crs_wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 vunerability_sp <- right_join(vunerability_data, census_tracts) 
@@ -38,9 +40,9 @@ vunerability_sp <- right_join(vunerability_data, census_tracts)
 
   class(vunerability_sp)
 
-  common_column <- "common_column_name"
-  print(common_column %in% colnames(vunerability_data))
-  print(common_column %in% colnames(census_tracts))
+  join_key <- "join_column_name"
+  print(join_key %in% colnames(vunerability_data))
+  print(join_key %in% colnames(census_tracts))
   
   
 #interactive map
